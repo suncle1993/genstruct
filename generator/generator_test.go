@@ -13,7 +13,6 @@ func TestMain(m *testing.M) {
 	configs := make(map[string]*gosql.Config)
 
 	dsn := os.Getenv("MYSQL_TEST_DSN")
-
 	if dsn == "" {
 		dsn = "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8&parseTime=True&loc=Asia%2FShanghai"
 	}
@@ -25,18 +24,20 @@ func TestMain(m *testing.M) {
 		ShowSql: true,
 	}
 
-	gosql.Connect(configs)
+	err := gosql.Connect(configs)
+	if err != nil {
+		fmt.Println("mysql connect failed: ", err.Error())
+		return
+	}
 
 	m.Run()
 }
 
 func TestShowStruct(t *testing.T) {
 	gen := NewGenerator(gosql.Use("default"))
-	out, err := gen.ShowStruct("articles", "form")
-
+	out, err := gen.GenStruct("articles", []string{"json", "db"})
 	if err != nil {
 		t.Error(err)
 	}
-
 	fmt.Println(string(out))
 }

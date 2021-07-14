@@ -30,17 +30,23 @@ func ({{ .ShortName }} *{{ .StructName }}) TableName() string {
 func ({{ .ShortName }} *{{ .StructName }}) PK() string {
     return "{{ .PrimaryKey }}"
 }
+
+func ({{ .ShortName }} *{{ .StructName }}) Schema() string {
+    return "{{ .Schema }}"
+}
 `
 
-type Attr struct {
+// Column 列
+type Column struct {
 	StructField string
 	Field       string
 	Type        string
 	Comment     string
 }
 
-type TableInfo struct {
-	Columns    []*Attr
+// Table 表
+type Table struct {
+	Columns    []*Column
 	Len        int
 	OtherTags  []string
 	TagLen     int
@@ -50,16 +56,20 @@ type TableInfo struct {
 	Database   string
 	PrimaryKey string
 	ExistTime  bool
+	Schema     string // create table statements except `create table table_name`
 }
 
+// Generator ...
 type Generator struct {
 	db *gosql.DB
 }
 
+// NewGenerator ...
 func NewGenerator(db *gosql.DB) *Generator {
 	return &Generator{db: db}
 }
 
+// Exec ...
 func (g *Generator) Exec(query string) ([]map[string]interface{}, error) {
 	rows, err := gosql.Queryx(query)
 	if err != nil {
@@ -76,6 +86,7 @@ func (g *Generator) Exec(query string) ([]map[string]interface{}, error) {
 	return datas, nil
 }
 
+// ShowTable ...
 func (g *Generator) ShowTable(datas []map[string]interface{}, start time.Time) {
 	if len(datas) > 0 {
 		header, cells := formatTable(datas)
@@ -90,28 +101,29 @@ func (g *Generator) ShowTable(datas []map[string]interface{}, start time.Time) {
 	}
 }
 
-func (g *Generator) ShowStruct(table string, tags []string) ([]byte, error) {
+// GenStruct ...
+func (g *Generator) GenStruct(table string, tags []string) ([]byte, error) {
 	query := fmt.Sprintf("SHOW FULL COLUMNS FROM %s", table)
 	datas, err := g.Exec(query)
 	if err != nil {
 		return nil, err
 	}
 
-	var databaseName string
-	err = gosql.QueryRowx("select database()").Scan(&databaseName)
+	var dbName string
+	err = gosql.QueryRowx("select database()").Scan(&dbName)
 
 	if err != nil {
 		return nil, err
 	}
 
-	info := &TableInfo{
+	info := &Table{
 		OtherTags:  tags,
 		TagLen:     len(tags),
-		Columns:    make([]*Attr, 0),
+		Columns:    make([]*Column, 0),
 		TableName:  table,
 		ShortName:  table[0:1],
 		StructName: titleCasedName(table),
-		Database:   databaseName,
+		Database:   dbName,
 	}
 
 	var existTime = false
@@ -123,7 +135,7 @@ func (g *Generator) ShowStruct(table string, tags []string) ([]byte, error) {
 			existTime = true
 		}
 
-		attr := &Attr{
+		attr := &Column{
 			StructField: titleCasedName(m["Field"]),
 			Field:       m["Field"],
 			Type:        tp,
@@ -139,6 +151,8 @@ func (g *Generator) ShowStruct(table string, tags []string) ([]byte, error) {
 	info.ExistTime = existTime
 
 	info.Len = len(info.Columns) - 1
+
+	info.Schema = "xxx" // TODO: 获取schema
 
 	tmpl, err := template.New("struct").Parse(tmplContent)
 	if err != nil {

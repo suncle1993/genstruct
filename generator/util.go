@@ -1,7 +1,6 @@
 package generator
 
 import (
-	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -47,9 +46,10 @@ func formatTable(datas []map[string]interface{}) (header []string, cells [][]str
 	return header, cells
 }
 
+// GetParams ...
 func GetParams(cmds []string, i int) (string, error) {
 	if len(cmds) < i+1 {
-		return "", errors.New(fmt.Sprintf("not index(%d) params", i))
+		return "", fmt.Errorf("not index(%d) params", i)
 	}
 
 	return strings.TrimSpace(cmds[i]), nil
@@ -94,7 +94,7 @@ func typeFormat(t string, isNull string) string {
 }
 
 func titleCasedName(name string) string {
-	newstr := make([]rune, 0)
+	newStr := make([]rune, 0)
 	upNextChar := true
 
 	name = strings.ToLower(name)
@@ -110,9 +110,8 @@ func titleCasedName(name string) string {
 			upNextChar = true
 			continue
 		}
-
-		newstr = append(newstr, chr)
+		newStr = append(newStr, chr)
 	}
 
-	return string(newstr)
+	return string(newStr)
 }

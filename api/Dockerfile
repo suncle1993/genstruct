@@ -5,7 +5,7 @@ RUN apk update && \
 
 WORKDIR /app
 
-COPY ./app ./
+COPY ./genstruct ./
 COPY .env ./
 
 ENV TZ=Asia/Shanghai
