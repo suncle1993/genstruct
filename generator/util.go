@@ -115,3 +115,23 @@ func titleCasedName(name string) string {
 
 	return string(newStr)
 }
+
+func getSchema(sql string) (schema string) {
+	sps := strings.Split(sql, "\n")
+	sps[0] = "("
+	schema = strings.Join(sps, "\n")
+	schema = strings.Replace(schema, "`", "", -1)
+	schema = "`" + schema + "`"
+	return
+}
+
+// getTableComment ...
+func getTableComment(sql string) (comment string) {
+	sps := strings.Split(sql, "\n")
+	lastLine := sps[len(sps)-1]
+	if strings.Contains(lastLine, "COMMENT=") {
+		comment = strings.Split(lastLine, "COMMENT=")[1]
+	}
+	comment = strings.Trim(comment, "'")
+	return
+}

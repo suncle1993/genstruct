@@ -19,20 +19,24 @@ import (
 	"time"
 )
 {{end}}
+// {{ .StructName }} {{ .TableComment }}
 type {{ .StructName }} struct {
     {{ range $i,$v := .Columns }}{{ .StructField }}    {{ .Type }}    ` + "\u0060" + `{{ range $j,$tag := $.OtherTags }}{{ $tag }}:"{{ $v.Field }}"{{ if ne $j $.Len }} {{ end }}{{ end }}` + "\u0060" + `{{ if ne .Comment "" }} // {{.Comment}}{{ end }}{{ if ne $i $.Len }}` + "\n" + `{{ end }}{{ end }}
 }
 
+// TableName ...
 func ({{ .ShortName }} *{{ .StructName }}) TableName() string {
-    return "{{ .TableName }}"
+    return "{{ .TableName }}"	// TODO: 如果分表需要修改
 }
 
+// PK ...
 func ({{ .ShortName }} *{{ .StructName }}) PK() string {
     return "{{ .PrimaryKey }}"
 }
 
+// Schema ...
 func ({{ .ShortName }} *{{ .StructName }}) Schema() string {
-    return "{{ .Schema }}"
+    return {{ .Schema }}
 }
 `
 
@@ -46,17 +50,18 @@ type Column struct {
 
 // Table 表
 type Table struct {
-	Columns    []*Column
-	Len        int
-	OtherTags  []string
-	TagLen     int
-	TableName  string
-	ShortName  string
-	StructName string
-	Database   string
-	PrimaryKey string
-	ExistTime  bool
-	Schema     string // create table statements except `create table table_name`
+	Columns      []*Column
+	Len          int
+	OtherTags    []string
+	TagLen       int
+	TableName    string
+	ShortName    string
+	StructName   string
+	Database     string
+	PrimaryKey   string
+	ExistTime    bool
+	Schema       string // create table statements except `create table table_name`
+	TableComment string
 }
 
 // Generator ...
@@ -103,31 +108,44 @@ func (g *Generator) ShowTable(datas []map[string]interface{}, start time.Time) {
 
 // GenStruct ...
 func (g *Generator) GenStruct(table string, tags []string) ([]byte, error) {
-	query := fmt.Sprintf("SHOW FULL COLUMNS FROM %s", table)
-	datas, err := g.Exec(query)
+	columnQuery := fmt.Sprintf("SHOW FULL COLUMNS FROM %s", table)
+	columnRows, err := g.Exec(columnQuery)
 	if err != nil {
 		return nil, err
 	}
 
 	var dbName string
 	err = gosql.QueryRowx("select database()").Scan(&dbName)
-
 	if err != nil {
 		return nil, err
 	}
 
+	createTableQuery := fmt.Sprintf("show create table %s", table)
+	createTableRows, err := g.Exec(createTableQuery)
+	if err != nil {
+		return nil, err
+	}
+	createTableSql := string(createTableRows[0]["Create Table"].([]byte))
+
+	tableComment := getTableComment(createTableSql)
+	if tableComment == "" {
+		tableComment = "..."
+	}
+
 	info := &Table{
-		OtherTags:  tags,
-		TagLen:     len(tags),
-		Columns:    make([]*Column, 0),
-		TableName:  table,
-		ShortName:  table[0:1],
-		StructName: titleCasedName(table),
-		Database:   dbName,
+		OtherTags:    tags,
+		TagLen:       len(tags),
+		Columns:      make([]*Column, 0),
+		TableName:    table,
+		ShortName:    table[0:1],
+		StructName:   titleCasedName(table),
+		Database:     dbName,
+		TableComment: tableComment,
+		Schema:       getSchema(createTableSql),
 	}
 
 	var existTime = false
-	for _, v := range datas {
+	for _, v := range columnRows {
 		m := mapToString(v)
 		tp := typeFormat(m["Type"], m["Null"])
 
@@ -152,15 +170,12 @@ func (g *Generator) GenStruct(table string, tags []string) ([]byte, error) {
 
 	info.Len = len(info.Columns) - 1
 
-	info.Schema = "xxx" // TODO: 获取schema
-
 	tmpl, err := template.New("struct").Parse(tmplContent)
 	if err != nil {
 		return nil, err
 	}
 
 	var buf bytes.Buffer
-
 	err = tmpl.Execute(&buf, info)
 	if err != nil {
 		return nil, err

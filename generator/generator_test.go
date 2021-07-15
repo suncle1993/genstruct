@@ -14,7 +14,7 @@ func TestMain(m *testing.M) {
 
 	dsn := os.Getenv("MYSQL_TEST_DSN")
 	if dsn == "" {
-		dsn = "root:123456@tcp(127.0.0.1:3306)/test?charset=utf8&parseTime=True&loc=Asia%2FShanghai"
+		dsn = "root:123456@tcp(127.0.0.1:3306)/suncle?charset=utf8&parseTime=True&loc=Asia%2FShanghai"
 	}
 
 	configs["default"] = &gosql.Config{
@@ -35,7 +35,7 @@ func TestMain(m *testing.M) {
 
 func TestShowStruct(t *testing.T) {
 	gen := NewGenerator(gosql.Use("default"))
-	out, err := gen.GenStruct("articles", []string{"json", "db"})
+	out, err := gen.GenStruct("anchor_get_gift_sync_mark", []string{"json", "db"})
 	if err != nil {
 		t.Error(err)
 	}
