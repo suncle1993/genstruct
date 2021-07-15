@@ -26,8 +26,6 @@ jobs:
           appdir: "api"
           env_file: ".env"
           procfile: "web: bin/genstruct_api"
-        env:
-          DATABASE_DSN: ${{secrets.DATABASE_DSN}}
 
       - name: build web
         run: |

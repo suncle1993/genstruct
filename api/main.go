@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -31,20 +32,24 @@ func main() {
 	port := flag.String("addr", ":8989", "addr ip:port")
 	flag.Parse()
 
-	m, err := dotenv.Read()
-	if err != nil {
-		log.Fatal("load env file error:", err)
+	dsn := os.Getenv("DATABASE_DSN")
+	if dsn == "" {
+		m, err := dotenv.Read()
+		if err != nil {
+			log.Fatal("load env file error:", err)
+		}
+		dsn = m["database.dsn"]
 	}
 
 	configs := make(map[string]*gosql.Config)
 	configs[defaultDbName] = &gosql.Config{
 		Enable:  true,
 		Driver:  "mysql",
-		Dsn:     m["database.dsn"],
+		Dsn:     dsn,
 		ShowSql: false,
 	}
 	gosql.FatalExit = false
-	err = gosql.Connect(configs)
+	err := gosql.Connect(configs)
 	if err != nil {
 		log.Fatal(err)
 	}
