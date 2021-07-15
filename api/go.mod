@@ -1,6 +1,6 @@
-module github.com/suncle1993/genstruct
+module genstruct_api
 
-go 1.12
+go 1.15
 
 require (
 	github.com/go-sql-driver/mysql v1.5.0
@@ -9,5 +9,9 @@ require (
 	github.com/mattn/go-runewidth v0.0.8 // indirect
 	github.com/olekukonko/tablewriter v0.0.4 // indirect
 	github.com/rs/cors v1.7.0
-	github.com/suncle1993/genstruct v1.1.2
+	github.com/suncle1993/genstruct v1.1.3
+)
+
+replace (
+	github.com/suncle1993/genstruct => github.com/suncle1993/genstruct v1.1.3
 )
