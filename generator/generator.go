@@ -85,7 +85,7 @@ func (g *Generator) Exec(query string) ([]map[string]interface{}, error) {
 
 	for rows.Next() {
 		data := make(map[string]interface{})
-		rows.MapScan(data)
+		_ = rows.MapScan(data)
 		datas = append(datas, data)
 	}
 	return datas, nil
@@ -125,9 +125,9 @@ func (g *Generator) GenStruct(table string, tags []string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	createTableSql := string(createTableRows[0]["Create Table"].([]byte))
+	createTableSQL := string(createTableRows[0]["Create Table"].([]byte))
 
-	tableComment := getTableComment(createTableSql)
+	tableComment := getTableComment(createTableSQL)
 	if tableComment == "" {
 		tableComment = "..."
 	}
@@ -141,7 +141,7 @@ func (g *Generator) GenStruct(table string, tags []string) ([]byte, error) {
 		StructName:   titleCasedName(table),
 		Database:     dbName,
 		TableComment: tableComment,
-		Schema:       getSchema(createTableSql),
+		Schema:       getSchema(createTableSQL),
 	}
 
 	var existTime = false

@@ -228,13 +228,4 @@ $RECYCLE.BIN/
 
 bin/
 output/
-hago_money_api_q2nd_d
-
-# tools
-tools/*
-!tools/parse_config.py
-!tools/parse_wl.py
-!tools/replacement_rich_data.py
-!tools/replacement_philippine_rich_data.py
-
 docker_data
