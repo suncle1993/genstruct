@@ -1,8 +1,7 @@
 import {fetch} from 'dva'
-import {Err} from './error'
 
 const getApiUrl = (url) => {
-  return process.env.NODE_ENV === 'production' ? 'https://api.fifsky.com' + url : url
+  return process.env.NODE_ENV === 'production' ? 'https://genstructapi.herokuapp.com/' + url : url
 }
 
 const codeMessage = {
