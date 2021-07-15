@@ -24,7 +24,6 @@ jobs:
           heroku_app_name: "genstructapi"
           heroku_email: "im.suncle@gmail.com"
           appdir: "api"
-          env_file: ".env"
           procfile: "web: bin/genstruct_api"
 
       - name: build web
