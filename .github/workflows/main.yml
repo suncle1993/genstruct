@@ -15,7 +15,7 @@ jobs:
       - name: build golang api
         run: |
           cd api
-          make build_64linux
+          make build_ci
 
       - name: deploy golang api
         uses: akhileshns/heroku-deploy@v3.12.12

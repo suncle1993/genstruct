@@ -15,6 +15,9 @@ build_64linux:
 	go vet ./...
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/${BINARY} ${MAIN_FILE}
 
+build_ci:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/${BINARY} ${MAIN_FILE}
+
 test:
 	go test -v ./... -cover
 
