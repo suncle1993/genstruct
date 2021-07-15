@@ -37,7 +37,7 @@ var (
 	gen *generator.Generator
 )
 
-func init() {
+func initGenerator() {
 	db = gosql.Use(defaultDbName)
 	gen = generator.NewGenerator(db)
 }
@@ -61,6 +61,8 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	initGenerator()
 
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("> ")

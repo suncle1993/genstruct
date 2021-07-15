@@ -49,6 +49,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	initGenerator()
+
 	handler := http.HandlerFunc(genStructHandler)
 	http.Handle("/api/struct/generate", c.Handler(handler))
 
@@ -58,14 +60,14 @@ func main() {
 	}
 }
 
-func init() {
+func initGenerator() {
 	db = gosql.Use(defaultDbName)
 	gen = generator.NewGenerator(db)
 	c = cors.AllowAll()
 }
 
-// GenPayload request body
-type GenPayload struct {
+// genPayload request body
+type genPayload struct {
 	Table string   `json:"table"`
 	Tags  []string `json:"tags"`
 }
@@ -77,7 +79,7 @@ func genStructHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload := &GenPayload{}
+	payload := &genPayload{}
 
 	err = json.Unmarshal(body, payload)
 	if err != nil {
@@ -105,7 +107,7 @@ func genStructHandler(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		_, err = db.Exec(fmt.Sprintf("drop table `%s`", tableName))
 		if err != nil {
-			log.Println("drop table error", err)
+			log.Println(fmt.Sprintf("drop table %s failed: ", tableName), err)
 		}
 	}()
 
