@@ -29,8 +29,11 @@ var (
 )
 
 func main() {
-	port := flag.String("addr", ":8989", "addr ip:port")
-	flag.Parse()
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = *flag.String("addr", ":8989", "addr ip:port")
+		flag.Parse()
+	}
 
 	dsn := os.Getenv("DATABASE_DSN")
 	if dsn == "" {
@@ -59,7 +62,7 @@ func main() {
 	handler := http.HandlerFunc(genStructHandler)
 	http.Handle("/api/struct/generate", c.Handler(handler))
 
-	err = http.ListenAndServe(*port, nil)
+	err = http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe", err)
 	}
