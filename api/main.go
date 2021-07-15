@@ -15,7 +15,7 @@ import (
 	"github.com/ilibs/gosql/v2"
 	"github.com/rs/cors"
 
-	"github.com/fifsky/genstruct/generator"
+	"github.com/suncle1993/genstruct/generator"
 )
 
 const (

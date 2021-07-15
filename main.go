@@ -11,7 +11,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/ilibs/gosql/v2"
 
-	"github.com/fifsky/genstruct/generator"
+	"github.com/suncle1993/genstruct/generator"
 )
 
 const (
