@@ -1,7 +1,5 @@
 # genstruct
 
-![build](https://github.com/fifsky/genstruct/workflows/build/badge.svg)
-
 Golang struct generator from mysql schema
 
 [![asciicast](https://asciinema.org/a/X5sk7TqrTTjF8AhN764K0Fc6m.svg)](https://asciinema.org/a/X5sk7TqrTTjF8AhN764K0Fc6m)
