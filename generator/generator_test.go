@@ -41,3 +41,15 @@ func TestShowStruct(t *testing.T) {
 	}
 	fmt.Println(string(out))
 }
+
+func TestLintName(t *testing.T) {
+	fmt.Println(lintName("uid"))
+	fmt.Println(lintName("Uid"))
+	fmt.Println(lintName("UserId"))
+	fmt.Println(lintName("USERID"))
+	fmt.Println(lintName("ApplicationJson"))
+	fmt.Println(lintName("TextHtml"))
+	fmt.Println(lintName("Url"))
+	fmt.Println(lintName("Api"))
+	fmt.Println(lintName("Http"))
+}

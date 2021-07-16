@@ -154,7 +154,7 @@ func (g *Generator) GenStruct(table string, tags []string) ([]byte, error) {
 		}
 
 		attr := &Column{
-			StructField: titleCasedName(m["Field"]),
+			StructField: lintName(titleCasedName(m["Field"])),
 			Field:       m["Field"],
 			Type:        tp,
 			Comment:     m["Comment"],
