@@ -63,8 +63,8 @@ package user_mine_info
 
 // UserMineInfo 用户挖矿剩余次数记录
 type UserMineInfo struct {
-	Id                int64 `db:"id" json:"id" `
-	Uid               int64 `db:"uid" json:"uid" `                                 // 用户uid
+	ID                int64 `db:"id" json:"id" `
+	UID               int64 `db:"uid" json:"uid" `                                 // 用户uid
 	MinedCnt          int64 `db:"mined_cnt" json:"mined_cnt" `                     // 剩余挖矿次数
 	UnExchangeDiamond int64 `db:"un_exchange_diamond" json:"un_exchange_diamond" ` // 未兑换为挖矿次数的钻石
 	CreatedAt         int64 `db:"created_at" json:"created_at" `                   // 创建时间
