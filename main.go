@@ -105,7 +105,7 @@ func handleInput(scanner *bufio.Scanner) (err error) {
 
 		tag, _ := generator.GetParams(cmds, 2)
 		tags := strings.Split(tag, ",")
-		if len(tags) == 0 {
+		if len(tag) == 0 || len(tags) == 0 {
 			tags = []string{"db", "json"}
 		}
 
